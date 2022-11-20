@@ -21,12 +21,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import androidx.paging.cachedIn
 import com.example.android.codelabs.paging.data.Article
 import com.example.android.codelabs.paging.data.ArticleRepository
 import kotlinx.coroutines.flow.Flow
 
-private const val ITEMS_PER_PAGE = 50
+private const val ITEMS_PER_PAGE = 1
 
 /**
  * ViewModel for the [ArticleActivity] screen.
@@ -40,8 +42,23 @@ class ArticleViewModel(
      * Stream of immutable states representative of the UI.
      */
     val items: Flow<PagingData<Article>> = Pager(
-        config = PagingConfig(pageSize = ITEMS_PER_PAGE, enablePlaceholders = false),
-        pagingSourceFactory = { repository.articlePagingSource() }
+        config = PagingConfig(
+            pageSize = ITEMS_PER_PAGE,
+            enablePlaceholders = false,
+            initialLoadSize = 1
+            ),
+        pagingSourceFactory = {
+            object : PagingSource<Int, Article>(){
+                override fun getRefreshKey(state: PagingState<Int, Article>): Int? {
+                    return null
+                }
+
+                override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
+                    TODO("Not yet implemented")
+                }
+
+            }
+        }
     )
         .flow
         // cachedIn allows paging to remain active in the viewModel scope, so even if the UI
