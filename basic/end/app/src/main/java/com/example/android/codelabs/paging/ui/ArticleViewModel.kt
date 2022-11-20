@@ -16,6 +16,7 @@
 
 package com.example.android.codelabs.paging.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -26,7 +27,9 @@ import androidx.paging.PagingState
 import androidx.paging.cachedIn
 import com.example.android.codelabs.paging.data.Article
 import com.example.android.codelabs.paging.data.ArticleRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDateTime
 
 private const val ITEMS_PER_PAGE = 1
 
@@ -37,6 +40,8 @@ private const val ITEMS_PER_PAGE = 1
 class ArticleViewModel(
     repository: ArticleRepository,
 ) : ViewModel() {
+
+    private val beginDate = LocalDateTime.now()
 
     /**
      * Stream of immutable states representative of the UI.
@@ -54,11 +59,27 @@ class ArticleViewModel(
                 }
 
                 override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
-                    TODO("Not yet implemented")
-                }
+                    delay(1_000L)
+                    val startKey = params.key ?: 0
+                    val range = startKey.until(params.loadSize + startKey)
+                    Log.d("ArticleViewModel", "range=$range,loadsize=${params.loadSize},startkey=$startKey")
 
+                    return LoadResult.Page(
+                        data = range.map{
+                            Article(
+                                id = it,
+                                title = "Title $it",
+                                description = "Description $it",
+                                created = beginDate.minusDays(it.toLong())
+                            )
+                        },
+                        prevKey = range.first - 1,
+                        nextKey = range.last + 1
+                    )
+                }
             }
-        }
+        },
+        initialKey = 100
     )
         .flow
         // cachedIn allows paging to remain active in the viewModel scope, so even if the UI
