@@ -50,6 +50,10 @@ class ArticleActivity : AppCompatActivity() {
 
         binding.bindAdapter(articleAdapter = articleAdapter)
 
+        binding.btnTest.setOnClickListener {
+            articleAdapter.refresh()
+        }
+
         // Collect from the PagingData Flow in the ViewModel, and submit it to the
         // PagingDataAdapter.
         lifecycleScope.launch {

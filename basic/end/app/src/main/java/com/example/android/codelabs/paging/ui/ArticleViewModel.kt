@@ -55,7 +55,7 @@ class ArticleViewModel(
         pagingSourceFactory = {
             object : PagingSource<Int, Article>(){
                 override fun getRefreshKey(state: PagingState<Int, Article>): Int? {
-                    return null
+                    return 200
                 }
 
                 override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
