@@ -49,6 +49,9 @@ class ReposAdapter : PagingDataAdapter<UiModel, ViewHolder>(UIMODEL_COMPARATOR) 
             when (uiModel) {
                 is UiModel.RepoItem -> (holder as RepoViewHolder).bind(uiModel.repo)
                 is UiModel.SeparatorItem -> (holder as SeparatorViewHolder).bind(uiModel.description)
+                null -> {
+
+                }
             }
         }
     }
